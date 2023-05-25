@@ -60,4 +60,4 @@ jobs:
         with:
           app-name: 'Movie-Recommendations'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_F64F076291514BCF96D13F096EB3EB5F }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_E44203440CAB493C9C039310A3A9DD76 }}
