@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Log Table</title>
+</head>
+<body>
+    <h1>Log Table</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>User</th>
+ 
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user[0] }}</td>
+ 
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

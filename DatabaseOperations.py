@@ -26,3 +26,37 @@ def init_db():
     
     db.commit()
     db.close()
+
+def fetchUserCursor(username):
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute('SELECT id FROM users WHERE username = ?', (username,))
+    user=cursor.fetchone()
+    db.close()
+    return user
+def fetchLoginCursor(username,password):
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute('SELECT id, username FROM users WHERE username = ? AND password = ?', (username, password))
+    user = cursor.fetchone()
+    return user
+def SignUpUser(username,password):
+    db = get_db()
+    db.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, password))
+    db.commit()
+    db.close()
+    
+def fetchLogCursor(maxRows):
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute('select timestamp,message,IP,user,error from log order by timestamp desc limit ?', (maxRows,))
+    logs=cursor.fetchall()
+    db.close()
+    return logs
+def fetchUsersCursor():
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute('select username from users')
+    users=cursor.fetchall()
+    db.close()
+    return users

@@ -78,16 +78,19 @@ def signup():
         username = request.form['username']
         password = request.form['password']
 
-        db = get_db()
-        cursor = db.execute('SELECT id FROM users WHERE username = ?', (username,))
-        existing_user = cursor.fetchone()
+        #db = get_db()
+        existing_user = fetchUserCursor(username) 
+       #cursor=db.cursor()
+        #cursor.execute("SELECT id FROM users WHERE username = "+username)
+        #existing_user = cursor.fetchone(username)
 
         if existing_user:
-            return 'Username already exists. Please choose a different username.'
-
-        db.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, password))
-        db.commit()
-        db.close()
+            return 'Username already exists. Please choose a different username or <a href="/login">log in</a>' 
+        SignUpUser(username,password)
+        #db.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, password))
+        # db.commit()
+        # db.close()
+        
         LogEvent(request,session,"User "+username+" Sign up:")
         return '<h2>Sign up successful! You can now <a href="/login">log in</a>.</h2>'
 
@@ -101,10 +104,10 @@ def login():
         username = request.form['username']
         password = request.form['password']
 
-        db = get_db()
-        cursor = db.execute('SELECT id, username FROM users WHERE username = ? AND password = ?', (username, password))
-        user = cursor.fetchone()
-
+        # db = get_db()
+        # cursor = db.execute('SELECT id, username FROM users WHERE username = ? AND password = ?', (username, password))
+        # user = cursor.fetchone()
+        user=fetchLoginCursor(username,password)
         if user:
             session['user_id'] = user['id']
             session['username'] = user['username']
@@ -125,7 +128,24 @@ def logout():
     session.clear()
     return redirect('/login')
 
-
+@app.route('/getlogs')
+def getlogs() :
+    username = session['username']
+    if username=='gedgafov':
+        logs=fetchLogCursor('100')
+        return render_template('logs.html', logs=logs)
+    else:
+        return 'not authorised'
+    
+@app.route('/getusers')
+def getusers():
+    username = session['username']
+    if username=='gedgafov':
+        users=fetchUsersCursor()
+        return render_template('users.html', users=users)
+    else:
+        return 'not authorised'
+       
 #=============================================================================
 if __name__ == '__main__':
    init_db()
