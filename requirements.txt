@@ -1,4 +1,4 @@
 Flask
 sqlalchemy
 openai
-dotenv
+python-dotenv
