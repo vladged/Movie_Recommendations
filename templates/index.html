@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<head>
+  <title>Movies</title>
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/bootstrap.min.css') }}"
+  />
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/style.css') }}"
+  />
+  <link
+    rel="shortcut icon"
+    href="{{ url_for('static', filename='favicon.ico') }}"
+  />
+  <style></style>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script>
+          function MovieSelected(movieName, movieInputId) {
+            document.getElementById(movieInputId).value=movieName;
+          }
+
+          function KeyStrock(userInput, suggestionsId,movieInputId) {
+            $.ajax({
+              url: '{{url_for('suggestions')}}',
+              type: 'POST',
+              data: { userInput: userInput },
+              success: function(response) {
+                movies = response;
+                var html = "";
+                movies.forEach(function(movie) {
+                  var movieTitle = movie.Title;
+                  var movieYear = movie.Year;
+                  var moviePoster = movie.Poster;
+                  html += "<br/><p>" + "<label for='myCheck'>"+movieTitle+":</label>"+
+                    " <input type='checkbox' id='myCheck' onclick=\"MovieSelected('" + movieTitle + "', '"+movieInputId+"')\"> </p>"+
+                    " <p>" + movieYear + "</p> <p><img src='" + moviePoster + " style='width:100px;height:120px;'/></p><br/>";
+                });
+                $('#' + suggestionsId).html(html);
+              },
+              error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert("Status: " + textStatus);
+                alert("Error: " + errorThrown);
+              }
+            });
+          }
+        function getRecommendations(event) {
+    //      event.preventDefault();
+          var loader = document.getElementById("loader");
+          var MovieSelector = document.getElementById("MovieSelector");
+          loader.style.display = "block"; // Display the loader animation
+          MovieSelector.style.display = "none";
+
+         // fetch('{{url_for('getAiRecommendations')}}', {method: 'POST'})
+         //   .then(response => response.json())
+        //    .then(data => {
+        //
+         //     loader.style.display = "none"; // Hide the loader animation
+        //    })
+        //    .catch(error => {
+       //      console.error('Error:', error);
+        //      loader.style.display = "none"; // Hide the loader animation
+        //    });
+      }
+  </script>
+</head>
+<html>
+  <body>
+    <nav>
+      {% block nav %}
+      <ul>
+        <li><a href="{{ url_for('index') }}">Home</a></li>
+      </ul>
+      {% endblock %}
+    </nav>
+    <main>
+      <div>
+        <h1>Movie Recommendations</h1>
+      </div>
+      <form method="post" action="{{url_for('getAiRecommendations')}}">
+        <div id="loader" class="loader">
+    
+        </div>
+        <div id="MovieSelector">
+          <h2>Please put the movies you like.</h2>
+
+          <div class="movie-container">
+            <!--<class="d-grid gap-2 d-sm-flex justify-content-sm-center align-items-center my-1"          >
+            input type="text" class="form-control" id="m1" name="movie1" style="max-width: 256px;" value="{{movie1Text}}">-->
+            <!-- <input type="text" class="movie-input" data-suggestions="suggestions1" placeholder="Type a movie name" />
+            <ul id="suggestions1"></ul>-->
+            <div>
+              <input
+                type="text"
+                id="m1"
+                name="movie1"
+                data-suggestions="suggestions1"
+                placeholder="Type a movie name"
+                onkeyup="KeyStrock(this.value,'suggestions1','m1')"
+                value="{{movie1Text}}"
+                class="movie-input"
+              />
+              <ul id="suggestions1" class="suggestions-list"></ul>
+            </div>
+            <div>
+              <input
+                type="text"
+                id="m2"
+                name="movie2"
+                data-suggestions="suggestions2"
+                placeholder="Type a movie name"
+                onkeyup="KeyStrock(this.value,'suggestions2','m2')"
+                value="{{movie2Text}}"
+                class="movie-input"
+              />
+              <ul id="suggestions2" class="suggestions-list"></ul>
+            </div>
+            <div>
+              <input
+                type="text"
+                id="m3"
+                name="movie3"
+                data-suggestions="suggestions3"
+                placeholder="Type a movie name"
+                onkeyup="KeyStrock(this.value,'suggestions3','m3')"
+                value="{{movie3Text}}"
+                class="movie-input"
+              />
+              <ul id="suggestions3" class="suggestions-list"></ul>
+            </div>
+            <div>
+              <input
+                type="text"
+                id="m4"
+                name="movie4"
+                data-suggestions="suggestions4"
+                placeholder="Type a movie name"
+                onkeyup="KeyStrock(this.value,'suggestions4','m4')"
+                value="{{movie4Text}}"
+                class="movie-input"
+              />
+              <ul id="suggestions4" class="suggestions-list"></ul>
+            </div>
+            <div>
+              <input
+                type="text"
+                id="m5"
+                name="movie5"
+                data-suggestions="suggestions5"
+                placeholder="Type a movie name"
+                onkeyup="KeyStrock(this.value,'suggestions5','m5')"
+                value="{{movie5Text}}"
+                class="movie-input"
+              />
+              <ul id="suggestions5" class="suggestions-list"></ul>
+            </div>
+          </div>
+          <div>
+            <button type="submit" onclick="getRecommendations(event)">
+              See the movies recommended for you.
+            </button>
+          </div>
+        </div>
+      </form>
+    </main>
+  </body>
+</html>

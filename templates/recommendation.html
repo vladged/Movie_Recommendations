@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<head>
+  <title>Recommendations</title>
+  <link   rel="stylesheet"   href="{{ url_for('static', filename='css/bootstrap.min.css') }}"/>
+   <link   rel="stylesheet"   href="{{ url_for('static', filename='css/style.css') }}"/>
+  <!--<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">-->
+</head>
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      .container {
+        display: flex;
+      }
+
+      .panel {
+        flex: 1;
+        padding: 20px;
+        border: 1px solid #ccc;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      {% block nav %}
+      <ul>
+        <li><a href="{{ url_for('index') }}">Home</a></li>
+      </ul>
+      {% endblock %}
+    </nav>
+    <div class="container">
+      <div class="panel">
+        <h2> Here are your recommendations based on the similar producer, director and cast. </h2>
+        {{recommendations1| safe }}
+      </div>
+      <div class="panel">
+        <h2>Here are your recommendations based on critics opinion from the sites like Rotten Tomatoes, who like the same movies.</h2>
+        {{recommendations2| safe }}
+      </div>
+    </div>
+   
+  </body>
+</html>

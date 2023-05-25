@@ -1,0 +1,151 @@
+nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333;
+}
+
+nav li {
+  float: left;
+}
+
+nav li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+nav li a:hover {
+  background-color: #111;
+}
+
+main {
+  padding: 10px 20px;
+}
+
+footer {
+  font-size: 13px;
+  color: #888;
+  border-top: 1px solid #eee;
+  margin-top: 25px;
+  text-align: center;
+  padding: 10px;
+}
+
+.alert {
+  position: relative;
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 1rem;
+  border: 1px solid #b8daff;
+  border-radius: 0.25rem;
+  color: #004085;
+  background-color: #cce5ff;
+}
+
+.error {
+  color: red;
+}
+
+h1 {
+  font-size: 32px;
+  /* Adjust the font size as desired */
+  font-weight: bold;
+  color: #1b1010;
+  /* Set the text color */
+  margin-bottom: 20px;
+  /* Add margin at the bottom to create spacing */
+}
+
+h2 {
+  font-size: 24px;
+  /* Adjust the font size as desired */
+  font-weight: bold;
+  color: #5a3333;
+  /* Set the text color */
+  margin-bottom: 15px;
+  /* Add margin at the bottom to create spacing */
+}
+h3 {
+  font-size: 20px;
+  /* Adjust the font size as desired */
+  font-weight: bold;
+  color: #915959;
+  /* Set the text color */
+  margin-bottom: 15px;
+  /* Add margin at the bottom to create spacing */
+}
+button {
+  padding: 10px 20px;
+  /* Adjust the padding as desired */
+  font-size: 18px;
+  /* Adjust the font size as desired */
+  font-weight: bold;
+  color: #fff;
+  /* Set the text color */
+  background-color: #3498db;
+  /* Set the background color */
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  /* Add other desired styles */
+}
+
+button:hover {
+  background-color: #217dbb;
+  /* Adjust the hover background color as desired */
+}
+
+button:active {
+  background-color: #0f608c;
+  /* Adjust the active background color as desired */
+}
+
+button:focus {
+  outline: none;
+  /* Remove the default focus outline if desired */
+}
+
+.movie-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.movie-input {
+  width: 350px;
+  height: 30px;
+  font-size: 14px;
+  padding: 5px;
+  /* Add more styling properties as per your design */
+}
+
+.suggestions-list {
+  max-height: 650px;
+  max-width: 350px;
+  overflow-y: auto;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.loader {
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #3498db;
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  animation: spin 2s linear infinite;
+  display: none;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
