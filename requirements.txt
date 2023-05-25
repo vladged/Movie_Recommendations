@@ -2,3 +2,4 @@ Flask
 sqlalchemy
 openai
 python-dotenv
+flask_cors
