@@ -6,21 +6,17 @@
 import openai
 import os
 from Prompt import *
-from config import *
+from dotenv import load_dotenv
+#from config import *
 
 """ from dotenv import load_dotenv, find_dotenv
 _ = load_dot env(find_dotenv()) # read local .env file
 """
 
-openai.api_key  = API_KEY
-""" def get_completion(prompt, model="gpt-3.5-turbo"):
-    messages = [{"role": "user", "content": prompt}]
-    response = openai.ChatCompletion.create(
-        model=model,
-        messages=messages,
-        temperature=0, # this is the degree of randomness of the model's output
-    )
-    return response.choices[0].message["content"] """
+#openai.api_key  = API_KEY
+load_dotenv()
+api_key = os.getenv("OPENAI_API_KEY")
+
 def get_completion(prompt):
     response = openai.Completion.create(
     engine='text-davinci-003',
