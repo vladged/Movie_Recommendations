@@ -6,7 +6,8 @@ from Prompt import Prompt
 import json
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory, session
 import requests
-from DatabaseOperations import *
+#from DatabaseOperations import *
+from AzureRedis.redis import *
 #=========================================================================================
 from flask_cors import CORS 
 
@@ -26,6 +27,7 @@ def index():
     if 'username' in session:
         # User is already signed in, redirect to the main page
         LogEvent(request,session,"User Login")
+        
         return render_template('index.html')
     else:
         # User is not signed up, redirect to the signup page
@@ -79,7 +81,7 @@ def signup():
         password = request.form['password']
 
         #db = get_db()
-        existing_user = fetchUserCursor(username) 
+        existing_user =  fetchUser(username) 
        #cursor=db.cursor()
         #cursor.execute("SELECT id FROM users WHERE username = "+username)
         #existing_user = cursor.fetchone(username)
@@ -107,7 +109,7 @@ def login():
         # db = get_db()
         # cursor = db.execute('SELECT id, username FROM users WHERE username = ? AND password = ?', (username, password))
         # user = cursor.fetchone()
-        user=fetchLoginCursor(username,password)
+        user=LoginUser(username,password)
         if user:
             session['user_id'] = user['id']
             session['username'] = user['username']
@@ -132,7 +134,7 @@ def logout():
 def getlogs() :
     username = session['username']
     if username=='gedgafov':
-        logs=fetchLogCursor('100')
+        logs=fetchAllLogs('100')
         return render_template('logs.html', logs=logs)
     else:
         return 'not authorised'
@@ -141,12 +143,12 @@ def getlogs() :
 def getusers():
     username = session['username']
     if username=='gedgafov':
-        users=fetchUsersCursor()
+        users=fetchAllUsers()
         return render_template('users.html', users=users)
     else:
         return 'not authorised'
        
 #=============================================================================
 if __name__ == '__main__':
-   init_db()
+   #init_db()
    app.run()
