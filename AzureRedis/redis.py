@@ -40,7 +40,7 @@ def get_db():
     
 def LogEvent(request, session, message):
     r = get_db();
-    current_time = datetime.datetime.now().isoformat()
+    current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
     ip_address = request.remote_addr
     username = session.get('username', 'Not defined')
     log_entry = f"{current_time} | IP: {ip_address} | Username: {username} | Message: {message}"
@@ -48,7 +48,7 @@ def LogEvent(request, session, message):
    
 def SignUpUser(username, password):
     r = get_db()
-    current_time = datetime.datetime.now().isoformat()
+    current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
     user_data = {
         'user_id': str(username),
         'password': str(password),
