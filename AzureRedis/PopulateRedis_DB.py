@@ -84,7 +84,10 @@ from transformers1 import handle_file_string
 # ##
 ##time
 #openai.organization = "vladimir.gedgafov"
-openai.api_key = "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"
+from dotenv import load_dotenv
+load_dotenv()
+open_ai_key = os.getenv("OPENAI_API_KEY")
+openai.api_key = open_ai_key
 
 # Initialise tokenizer
 tokenizer = tiktoken.get_encoding("cl100k_base")

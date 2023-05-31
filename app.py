@@ -32,13 +32,14 @@ def index():
     else:
         # User is not signed up, redirect to the signup page
         return redirect(url_for('signup'))
-   
+
 
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
+#Movies
 @app.route('/getAiRecommendations', methods=['POST'])
 def getAiRecommendations():
    movies=""
@@ -54,8 +55,28 @@ def getAiRecommendations():
       
         return render_template('recommendation.html', recommendations1 = recommendations1,recommendations2 = recommendations2)
    else:
-       print('Request for hello page received with blank movies list -- redirecting')
+       #print('Request for hello page received with blank movies list -- redirecting')
        return redirect(url_for('index'))
+#Shows
+@app.route('/getAiRecommendations_Shows', methods=['POST'])
+def getAiRecommendations_Shows():
+   movies=""
+   for i in range (1,5):
+       movieControlName='movie'+str(i)
+       movies=movies+request.form.get(movieControlName)+";"
+       
+   if movies:
+        LogEvent(request,session,"User put movies:"+movies)
+        prompt=Prompt(movies)
+        recommendations1=get_completion(prompt.prompt1)
+        recommendations2=get_completion(prompt.prompt2)      
+      
+        return render_template('recommendation.html', recommendations1 = recommendations1,recommendations2 = recommendations2)
+   else:
+       #print('Request for hello page received with blank movies list -- redirecting')
+       return redirect(url_for('index'))
+
+#API call to return movies info
 @app.route('/suggestions', methods=['POST'])
 def suggestions():
     user_input = request.form['userInput']
@@ -109,10 +130,10 @@ def login():
         # db = get_db()
         # cursor = db.execute('SELECT id, username FROM users WHERE username = ? AND password = ?', (username, password))
         # user = cursor.fetchone()
-        user=LoginUser(username,password)
-        if user:
-            session['user_id'] = user['id']
-            session['username'] = user['username']
+        username=LoginUser(username,password)
+        if username:
+            #session['user_id'] = user['user_id']
+            session['username'] = username
             LogEvent(request,session,"User Sign in")
             return redirect('/')
         else:
