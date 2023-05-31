@@ -3,3 +3,4 @@ sqlalchemy
 openai
 python-dotenv
 flask_cors
+redis
