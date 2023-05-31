@@ -6,7 +6,8 @@ from Prompt import Prompt
 import json
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory, session
 import requests
-from DatabaseOperations import *
+#from DatabaseOperations import *
+from AzureRedis.redis import *
 #=========================================================================================
 from flask_cors import CORS 
 
@@ -26,17 +27,19 @@ def index():
     if 'username' in session:
         # User is already signed in, redirect to the main page
         LogEvent(request,session,"User Login")
+        
         return render_template('index.html')
     else:
         # User is not signed up, redirect to the signup page
         return redirect(url_for('signup'))
-   
+
 
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
+#Movies
 @app.route('/getAiRecommendations', methods=['POST'])
 def getAiRecommendations():
    movies=""
@@ -52,8 +55,28 @@ def getAiRecommendations():
       
         return render_template('recommendation.html', recommendations1 = recommendations1,recommendations2 = recommendations2)
    else:
-       print('Request for hello page received with blank movies list -- redirecting')
+       #print('Request for hello page received with blank movies list -- redirecting')
        return redirect(url_for('index'))
+#Shows
+@app.route('/getAiRecommendations_Shows', methods=['POST'])
+def getAiRecommendations_Shows():
+   movies=""
+   for i in range (1,5):
+       movieControlName='movie'+str(i)
+       movies=movies+request.form.get(movieControlName)+";"
+       
+   if movies:
+        LogEvent(request,session,"User put movies:"+movies)
+        prompt=Prompt(movies)
+        recommendations1=get_completion(prompt.prompt1)
+        recommendations2=get_completion(prompt.prompt2)      
+      
+        return render_template('recommendation.html', recommendations1 = recommendations1,recommendations2 = recommendations2)
+   else:
+       #print('Request for hello page received with blank movies list -- redirecting')
+       return redirect(url_for('index'))
+
+#API call to return movies info
 @app.route('/suggestions', methods=['POST'])
 def suggestions():
     user_input = request.form['userInput']
@@ -79,7 +102,7 @@ def signup():
         password = request.form['password']
 
         #db = get_db()
-        existing_user = fetchUserCursor(username) 
+        existing_user =  fetchUser(username) 
        #cursor=db.cursor()
         #cursor.execute("SELECT id FROM users WHERE username = "+username)
         #existing_user = cursor.fetchone(username)
@@ -107,10 +130,10 @@ def login():
         # db = get_db()
         # cursor = db.execute('SELECT id, username FROM users WHERE username = ? AND password = ?', (username, password))
         # user = cursor.fetchone()
-        user=fetchLoginCursor(username,password)
-        if user:
-            session['user_id'] = user['id']
-            session['username'] = user['username']
+        username=LoginUser(username,password)
+        if username:
+            #session['user_id'] = user['user_id']
+            session['username'] = username
             LogEvent(request,session,"User Sign in")
             return redirect('/')
         else:
@@ -132,7 +155,7 @@ def logout():
 def getlogs() :
     username = session['username']
     if username=='gedgafov':
-        logs=fetchLogCursor('100')
+        logs=fetchAllLogs('100')
         return render_template('logs.html', logs=logs)
     else:
         return 'not authorised'
@@ -141,12 +164,12 @@ def getlogs() :
 def getusers():
     username = session['username']
     if username=='gedgafov':
-        users=fetchUsersCursor()
+        users=fetchAllUsers()
         return render_template('users.html', users=users)
     else:
         return 'not authorised'
        
 #=============================================================================
 if __name__ == '__main__':
-   init_db()
+   #init_db()
    app.run()
