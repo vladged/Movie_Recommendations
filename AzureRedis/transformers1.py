@@ -89,7 +89,7 @@ def handle_file_string(file,tokenizer,redis_conn, text_embedding_field,PREFIX):
 
     try:
         load_vectors(redis_conn, vectors,text_embedding_field,PREFIX)
-
+  
     except Exception as e:
         print(f'Ran into a problem uploading to Redis: {e}')
 

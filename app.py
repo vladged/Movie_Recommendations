@@ -72,6 +72,7 @@ def getAiRecommendations_Shows():
         recommendations2=get_completion(prompt.prompt2)      
       
         return render_template('recommendation.html', recommendations1 = recommendations1,recommendations2 = recommendations2)
+        LogEvent(request,session,"User get recommendations")
    else:
        #print('Request for hello page received with blank movies list -- redirecting')
        return redirect(url_for('index'))
