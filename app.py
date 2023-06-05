@@ -156,7 +156,7 @@ def logout():
 def getlogs() :
     username = session['username']
     if username=='gedgafov':
-        logs=fetchAllLogs('100')
+        logs=fetchAllLogs(100)
         return render_template('logs.html', logs=logs)
     else:
         return 'not authorised'
