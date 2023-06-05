@@ -62,7 +62,7 @@ def SignUpUser(username, password):
 def fetchAllLogs(maxRows):
     r = get_db()
     #all_logs = r.hgetall('logs1')
-    items = r.lrange('logs1', 0, maxRows)
+    items = r.lrange('logs1', -maxRows, -1)
     return items
 
 # Retrieve logs
