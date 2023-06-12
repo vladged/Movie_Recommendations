@@ -18,12 +18,12 @@ from config1 import COMPLETIONS_MODEL, EMBEDDINGS_MODEL, CHAT_MODEL, TEXT_EMBEDD
 VECTOR_DIM = 1536 #len(data['title_vector'][0]) # length of the vectors
 #VECTOR_NUMBER = len(data)                 # initial number of vectors
 DISTANCE_METRIC = "COSINE" 
-PREFIX = "starrover"                            # prefix for the document keys
+PREFIX = "starrover1"                            # prefix for the document keys
 INDEX_NAME = "starrover-index"  
 #VECTOR_FIELD_NAME = 'content_vector'
 data_dir = 'C:\\Development\\Open_AI\\msdocs-python-flask-webapp-quickstart-main\\msdocs-python-flask-webapp-quickstart-main\\OpenAI\\data_star_rover'
 
-from database1  import get_redis_connection
+
 #redis_db=Redis_DB(PREFIX,INDEX_NAME)
 
 # Ignore unclosed SSL socket warnings - optional in case you get these errors
@@ -46,8 +46,8 @@ from redis.commands.search.indexDefinition import (
     IndexDefinition,
     IndexType
 )
-
-redis_client = get_redis_connection()
+from redis_Cloud  import get_db
+redis_client = get_db()
 
 filename = TextField("filename")
 text_chunk = TextField("text_chunk")

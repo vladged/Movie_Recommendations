@@ -7,7 +7,9 @@ import json
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory, session
 import requests
 #from DatabaseOperations import *
-from AzureRedis.redis import *
+#from AzureRedis.redis_Azure import *
+from AzureRedis.redis_Cloud import *
+
 #=========================================================================================
 from flask_cors import CORS 
 
@@ -165,7 +167,7 @@ def getlogs() :
 def getusers():
     username = session['username']
     if username=='gedgafov':
-        users=fetchAllUsers()
+        users=fetchAllUsers(100)
         return render_template('users.html', users=users)
     else:
         return 'not authorised'

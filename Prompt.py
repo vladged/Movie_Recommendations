@@ -8,7 +8,7 @@ class Prompt:
 
         self.prompt1 = f"Your task is to find movies which user would like based on the list \
         of the movies user likes. \
-        Don't take genre into account, the most important factors are director, producer and cast.\
+        Don't take genre into account, the most important factors are director, producer and cast. Explain your decision.\
         Produce a list of movies or shows with descriptions.\
         Also produce the URLs to Imdb for each show.\
         Please make each URL clickable, put it inside <a> HTML tag.\
@@ -18,7 +18,7 @@ class Prompt:
                 
         
         self.prompt2 = f"Your task is to find movies and shows which user would like based on the list of the movies user likes. \
-        Your decision should be based on critics' opinions from sites like Rotten Tomatoes. \
+        Your decision should be based on critics' opinions from sites like Rotten Tomatoes and RogerEbert.  Explain your decision.\
         Produce a list of movies or shows with descriptions. \
         Also produce the URLs to IMDb for each show. \
         Please make each URL clickable, put it inside <a> HTML tag. \
