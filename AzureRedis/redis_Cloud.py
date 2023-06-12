@@ -7,10 +7,10 @@ import json
 redis_host = 'redis-13531.c56.east-us.azure.cloud.redislabs.com'
 redis_port = '13531'
 
-#movies-recommendations.redis.cache.windows.net:6380,password=53fyVxKaZHA0NDYrNpPQCGb9Pplp6wbnUAzCaH8Dw4U=,ssl=True,abortConnect=False
+
 
 load_dotenv()
-redis_password = 'Q9m7ZX3M1glOuIeGzBdcqgHqZla8X5Cx' #os.getenv("redis_password")
+redis_password = os.getenv("redis_cloud_password")
 
 
 def get_db():
