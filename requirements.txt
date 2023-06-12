@@ -4,3 +4,5 @@ openai
 python-dotenv
 flask_cors
 redis
+pandas
+numpy
