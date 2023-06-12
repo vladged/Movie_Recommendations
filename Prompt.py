@@ -18,7 +18,9 @@ class Prompt:
                 
         
         self.prompt2 = f"Your task is to find movies and shows which user would like based on the list of the movies user likes. \
-        Your decision should be based on critics' opinions from sites like Rotten Tomatoes and RogerEbert.  Explain your decision.\
+        Your decision should be based on critics' opinions from sites like Rotten Tomatoes and RogerEbert.\
+        Explain your decision.\
+        Don't take genre into account.\
         Produce a list of movies or shows with descriptions. \
         Also produce the URLs to IMDb for each show. \
         Please make each URL clickable, put it inside <a> HTML tag. \
