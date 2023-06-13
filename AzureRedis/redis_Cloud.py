@@ -3,6 +3,16 @@ from dotenv import load_dotenv
 import os
 import datetime
 import json
+from redis.commands.search.field import VectorField
+from redis.commands.search.field import TextField, NumericField
+from redis.commands.search.query import Query
+import openai
+import pandas as pd 
+import numpy as np
+from . import config 
+
+
+
 # Create a Redis client
 redis_host = 'redis-13531.c56.east-us.azure.cloud.redislabs.com'
 redis_port = '13531'
@@ -103,13 +113,7 @@ def LoginUser(username, password):
 #     return r
 
 # Create a Redis index to hold our data
-from redis.commands.search.field import VectorField
-from redis.commands.search.field import TextField, NumericField
-from redis.commands.search.query import Query
-import openai
-import pandas as pd 
-import numpy as np
-from AzureRedis.config1 import *
+
 
 def create_hnsw_index (redis_conn,vector_field_name,vector_dimensions=1536, distance_metric='COSINE'):
     redis_conn.ft().create_index([
@@ -145,11 +149,11 @@ def query_redis(redis_conn,query,index_name, top_k=2):
     ## Creates embedding vector from user query
     embedded_query = np.array(openai.Embedding.create(
                                                 input=query,
-                                                model=EMBEDDINGS_MODEL,
+                                                model=config.EMBEDDINGS_MODEL,
                                             )["data"][0]['embedding'], dtype=np.float32).tobytes()
 
     #prepare the query
-    q = Query(f'*=>[KNN {top_k} @{VECTOR_FIELD_NAME} $vec_param AS vector_score]').sort_by('vector_score').paging(0,top_k).return_fields('vector_score','filename','text_chunk','text_chunk_index').dialect(2) 
+    q = Query(f'*=>[KNN {top_k} @{config.VECTOR_FIELD_NAME} $vec_param AS vector_score]').sort_by('vector_score').paging(0,top_k).return_fields('vector_score','filename','text_chunk','text_chunk_index').dialect(2) 
     params_dict = {"vec_param": embedded_query}
 
     

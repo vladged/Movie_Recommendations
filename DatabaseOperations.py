@@ -1,5 +1,5 @@
 
-from config import *
+from AzureRedis.config import *
 import sqlite3
 #from flask import request, session
 

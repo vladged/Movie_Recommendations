@@ -8,20 +8,15 @@ from typing import Iterator
 #import tiktoken
 #import textract
 from numpy import array, average
+from ..AzureRedis import config 
+from AzureRedis.redis_Cloud import get_redis_results,get_redis_connection
+from AzureRedis.redis_Cloud import get_redis_results
 
 
 def OpenAI_AnswerQuestion(question):
     # Set our default models and chunking size
 
-    VECTOR_DIM = 1536 #len(data['title_vector'][0]) # length of the vectors
-    #VECTOR_NUMBER = len(data)                 # initial number of vect
-    DISTANCE_METRIC = "COSINE"                # distance metric for the vectors (ex. COSININDEX_NAME = "f1-index"           # name of the search index
-    #PREFIX = "Sherlock"  
-    #INDEX_NAME = "sherlok-index"
-    PREFIX = "starrover"                            # prefix for the document keys
-    INDEX_NAME = "starrover-index"  
-    
-    
+     
     from redis import Redis
     from redis.commands.search.query import Query
     from redis.commands.search.field import (
@@ -33,11 +28,8 @@ def OpenAI_AnswerQuestion(question):
         IndexDefinition,
         IndexType
     )
-    from config1 import COMPLETIONS_MODEL,  VECTOR_FIELD_NAME
+ 
 
-
-
-    from database1 import get_redis_results,get_redis_connection
     # redis_db=Redis_DB(PREFIX,INDEX_NAME)
     
   
@@ -76,11 +68,10 @@ def OpenAI_AnswerQuestion(question):
     # Check that our docs have been inserted
     # print (redis_client.ft(INDEX_NAME).info()['num_docs'])
 
-    from database1 import get_redis_results
-    
+   
     #query='who helps sherlok holmes'
 
-    result_df = get_redis_results(redis_client,question,index_name=INDEX_NAME)
+    result_df = get_redis_results(redis_client,question,index_name=config.INDEX_NAME)
     print (result_df.head(2))
 
     # Build a prompt to provide the original query, the result and ask to summarise for the user
@@ -90,9 +81,9 @@ def OpenAI_AnswerQuestion(question):
     Summary:
     '''
     summary_prepped = summary_prompt.replace('SEARCH_QUERY_HERE',question).replace('SEARCH_RESULT_HERE',result_df['result'][0])
-    summary = openai.Completion.create(engine=COMPLETIONS_MODEL,prompt=summary_prepped,max_tokens=500)
+    summary = openai.Completion.create(engine=config.COMPLETIONS_MODEL,prompt=summary_prepped,max_tokens=500)
     summary_prepped1 = summary_prompt.replace('SEARCH_QUERY_HERE',question).replace('SEARCH_RESULT_HERE',result_df['result'][1])
-    summary1 = openai.Completion.create(engine=COMPLETIONS_MODEL,prompt=summary_prepped,max_tokens=500)
+    summary1 = openai.Completion.create(engine=config.COMPLETIONS_MODEL,prompt=summary_prepped,max_tokens=500)
     
     
     # Response provided by GPT-3

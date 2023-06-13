@@ -4,8 +4,12 @@ import openai
 import pandas as pd
 import numpy as np
 
-from config1 import TEXT_EMBEDDING_CHUNK_SIZE, EMBEDDINGS_MODEL
-from database1 import load_vectors
+import AzureRedis.config as config 
+
+# import sys
+# print(sys.path)
+
+from AzureRedis.redis_Cloud import load_vectors
 
 def get_col_average_from_list_of_lists(list_of_lists):
     """Return the average of each column in a list of lists."""
@@ -21,10 +25,10 @@ def get_col_average_from_list_of_lists(list_of_lists):
 
 def create_embeddings_for_text(text, tokenizer):
     """Return a list of tuples (text_chunk, embedding) and an average embedding for a text."""
-    token_chunks = list(chunks(text, TEXT_EMBEDDING_CHUNK_SIZE, tokenizer))
+    token_chunks = list(chunks(text, config.TEXT_EMBEDDING_CHUNK_SIZE, tokenizer))
     text_chunks = [tokenizer.decode(chunk) for chunk in token_chunks]
 
-    embeddings_response = get_embeddings(text_chunks, EMBEDDINGS_MODEL)
+    embeddings_response = get_embeddings(text_chunks, config.EMBEDDINGS_MODEL)
     embeddings = [embedding["embedding"] for embedding in embeddings_response]
     text_embeddings = list(zip(text_chunks, embeddings))
 
