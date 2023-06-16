@@ -4,12 +4,12 @@ import openai
 import pandas as pd
 import numpy as np
 
-import AzureRedis.config as config 
+import Redis_Cloud.config as config 
 
 # import sys
 # print(sys.path)
 
-from AzureRedis.redis_Cloud import load_vectors
+from Redis_Cloud.redis_Cloud import load_vectors
 
 def get_col_average_from_list_of_lists(list_of_lists):
     """Return the average of each column in a list of lists."""

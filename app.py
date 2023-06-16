@@ -8,7 +8,8 @@ from flask import Flask, render_template, request, redirect, url_for, send_from_
 import requests
 #from DatabaseOperations import *
 #from AzureRedis.redis_Azure import *
-from AzureRedis.redis_Cloud import *
+from Redis_Cloud.redis_Cloud import *
+from BookAnalysis.QA import *
 
 #=========================================================================================
 from flask_cors import CORS 
@@ -171,6 +172,28 @@ def getusers():
         return render_template('users.html', users=users)
     else:
         return 'not authorised'
+#============================================================================
+@app.route('/question')
+def question():
+    return render_template('_Question.html')
+
+
+@app.route('/qa', methods=['GET', 'POST'])
+def qa():
+   question = request.form.get('question')
+
+   if question:
+       from BookAnalysis.QA import  OpenAI_AnswerQuestion
+       answers=OpenAI_AnswerQuestion(question)
+ 
+       return render_template('_Answer.html', answer0 = answers[0],answer1 = answers[1],answer2 = answers[2],answer3 = answers[3])
+   else:
+       print('Request for hello page received with no question or blank question -- redirecting')
+       return redirect(url_for('question'))
+
+
+
+
        
 #=============================================================================
 if __name__ == '__main__':

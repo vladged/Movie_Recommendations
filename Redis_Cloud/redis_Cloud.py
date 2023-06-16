@@ -10,8 +10,10 @@ import openai
 import pandas as pd 
 import numpy as np
 from . import config 
+import sys
 
-
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR))
 
 # Create a Redis client
 redis_host = 'redis-13531.c56.east-us.azure.cloud.redislabs.com'
@@ -51,13 +53,16 @@ def get_db():
 #     r.rpush('logs', log_json)
     
 def LogEvent(request, session, message):
+   try:
     r = get_db();
     current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
     ip_address = request.remote_addr
     username = session.get('username', 'Not defined')
     log_entry = f"{current_time} | IP: {ip_address} | Username: {username} | Message: {message}"
     r.rpush('logs1', log_entry) 
-   
+   except Exception as e:
+    print(f"Error: {e}")
+       
 def SignUpUser(username, password):
     r = get_db()
     current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')

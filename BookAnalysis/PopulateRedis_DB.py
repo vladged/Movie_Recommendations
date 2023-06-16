@@ -16,10 +16,10 @@ import sys
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
 # Set our default models and chunking size
-import AzureRedis.config #COMPLETIONS_MODEL, EMBEDDINGS_MODEL, CHAT_MODEL, TEXT_EMBEDDING_CHUNK_SIZE, VECTOR_FIELD_NAME
+import Redis_Cloud.config #COMPLETIONS_MODEL, EMBEDDINGS_MODEL, CHAT_MODEL, TEXT_EMBEDDING_CHUNK_SIZE, VECTOR_FIELD_NAME
 import warnings 
 
-from AzureRedis.redis_Cloud  import *
+from Redis_Cloud.redis_Cloud  import *
 import transformers #import handle_file_string
 from dotenv import load_dotenv
 
@@ -100,14 +100,27 @@ for csv_file in csv_files:
     #print(pdf_path)
     
     # Extract the raw text from each PDF using textract
-    try:
-        text = textract.process(csv_path, encoding='UTF-8')
-    except Exception as e:
-        print(e)
+    # try:
+    #     text = textract.process(csv_path, encoding='UTF-8')
+    # except Exception as e:
+    #     print(e)
+    with open(csv_path, 'rb') as file:
+        try:
+            # Read the file as bytes
+            content = file.read()
+            
+            # Decode the bytes into a string, ignoring errors
+            text = content.decode('utf-8', errors='ignore')
+        except UnicodeDecodeError as e:
+           
+            # Handle the error, such as logging it or displaying a message
+            # You can choose to ignore the error and continue processing
+
        
     
     # Chunk each document, embed the contents and load to Redis
     #handle_file_string((csv_file,text.decode("utf-8")),tokenizer,redis_client,PREFIX)
-    transformers.handle_file_string((csv_file,text.decode("utf-8")),tokenizer,redis_client,config.VECTOR_FIELD_NAME,config.PREFIX)
+    #transformers.handle_file_string((csv_file,text.decode("utf-8")),tokenizer,redis_client,config.VECTOR_FIELD_NAME,config.PREFIX)
+    transformers.handle_file_string((csv_file,text),tokenizer,redis_client,config.VECTOR_FIELD_NAME,config.PREFIX)
 
 

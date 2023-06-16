@@ -8,32 +8,21 @@ from typing import Iterator
 #import tiktoken
 #import textract
 from numpy import array, average
-from ..AzureRedis import config 
-from AzureRedis.redis_Cloud import get_redis_results,get_redis_connection
-from AzureRedis.redis_Cloud import get_redis_results
+from Redis_Cloud.config import * 
+from Redis_Cloud.redis_Cloud  import *
+    
+# from redis import Redis
+# from redis.commands.search.query import Query
+# from redis.commands.search.field import (TextField,VectorField,NumericField)
+# from redis.commands.search.indexDefinition import (IndexDefinition,IndexType)
 
+# SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+# sys.path.append(os.path.dirname(SCRIPT_DIR))
 
 def OpenAI_AnswerQuestion(question):
-    # Set our default models and chunking size
-
-     
-    from redis import Redis
-    from redis.commands.search.query import Query
-    from redis.commands.search.field import (
-        TextField,
-        VectorField,
-        NumericField
-    )
-    from redis.commands.search.indexDefinition import (
-        IndexDefinition,
-        IndexType
-    )
- 
-
-    # redis_db=Redis_DB(PREFIX,INDEX_NAME)
-    
+   
   
-    redis_client = get_redis_connection()
+    redis_client = get_db()
 
     # filename = TextField("filename")
     # text_chunk = TextField("text_chunk")
