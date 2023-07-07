@@ -16,8 +16,9 @@ from flask_cors import CORS
 
 
 
-
-
+redis_helper=Redis_helper(redis_host = 'redis-13531.c56.east-us.azure.cloud.redislabs.com',redis_port = '13531',redis_password_name="redis_cloud_password")
+# redis_host = 'redis-13531.c56.east-us.azure.cloud.redislabs.com'
+    # redis_port = '13531'
 app = Flask(__name__)
 app.secret_key = 'ztKTTabLWigNpqDk0xDzT3BlbkFJJEhAyCx0LbR4niPEMXT9'  # Replace with your own secret key
 #CORS(app)
@@ -29,7 +30,7 @@ def index():
 #    movies=prompt.Favorite_Movies.split(";")
     if 'username' in session:
         # User is already signed in, redirect to the main page
-        LogEvent(request,session,"User Login")
+        redis_helper.LogEvent(request,session,"User Login")
         
         return render_template('index.html')
     else:
@@ -51,7 +52,7 @@ def getAiRecommendations():
        movies=movies+request.form.get(movieControlName)+";"
        
    if movies:
-        LogEvent(request,session,"User put movies:"+movies)
+        redis_helper.LogEvent(request,session,"User put movies:"+movies)
         prompt=Prompt(movies)
         recommendations1=get_completion(prompt.prompt1)
         recommendations2=get_completion(prompt.prompt2)      
@@ -69,7 +70,7 @@ def getAiRecommendations_Shows():
        movies=movies+request.form.get(movieControlName)+";"
        
    if movies:
-        LogEvent(request,session,"User put movies:"+movies)
+        redis_helper.LogEvent(request,session,"User put movies:"+movies)
         prompt=Prompt(movies)
         recommendations1=get_completion(prompt.prompt1)
         recommendations2=get_completion(prompt.prompt2)      
@@ -106,19 +107,19 @@ def signup():
         password = request.form['password']
 
         #db = get_db()
-        existing_user =  fetchUser(username) 
+        existing_user =  redis_helper.fetchUser(username) 
        #cursor=db.cursor()
         #cursor.execute("SELECT id FROM users WHERE username = "+username)
         #existing_user = cursor.fetchone(username)
 
         if existing_user:
             return 'Username already exists. Please choose a different username or <a href="/login">log in</a>' 
-        SignUpUser(username,password)
+        redis_helper.SignUpUser(username,password)
         #db.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, password))
         # db.commit()
         # db.close()
         
-        LogEvent(request,session,"User "+username+" Sign up:")
+        redis_helper.LogEvent(request,session,"User "+username+" Sign up:")
         return '<h2>Sign up successful! You can now <a href="/login">log in</a>.</h2>'
 
     return render_template('signup.html')
@@ -134,11 +135,11 @@ def login():
         # db = get_db()
         # cursor = db.execute('SELECT id, username FROM users WHERE username = ? AND password = ?', (username, password))
         # user = cursor.fetchone()
-        username=LoginUser(username,password)
+        username=redis_helper.LoginUser(username,password)
         if username:
             #session['user_id'] = user['user_id']
             session['username'] = username
-            LogEvent(request,session,"User Sign in")
+            redis_helper.LogEvent(request,session,"User Sign in")
             return redirect('/')
         else:
             return 'Invalid credentials. Please try again.'
@@ -159,7 +160,7 @@ def logout():
 def getlogs() :
     username = session['username']
     if username=='gedgafov':
-        logs=fetchAllLogs(100)
+        logs=redis_helper.fetchAllLogs(100)
         return render_template('logs.html', logs=logs)
     else:
         return 'not authorised'
@@ -168,7 +169,7 @@ def getlogs() :
 def getusers():
     username = session['username']
     if username=='gedgafov':
-        users=fetchAllUsers(100)
+        users=redis_helper.fetchAllUsers(100)
         return render_template('users.html', users=users)
     else:
         return 'not authorised'

@@ -20,27 +20,27 @@ load_dotenv()
 open_ai_key = os.getenv("OPENAI_API_KEY")
 openai.api_key = open_ai_key
 
-redis_client = get_db()
+redis_helper=Redis_helper(redis_host='localhost',port='6379',redis_password_name='')
 
 
-print (redis_client.ft(INDEX_NAME).info()['num_docs'])
+# print (redis_client.ft(INDEX_NAME).info()['num_docs'])
 
 
-f1_query='how marin iden died'
+# f1_query='how marin iden died'
 
-result_df = get_redis_results(redis_client,f1_query,index_name=INDEX_NAME)
-print (result_df.head(2))
+# result_df = get_redis_results(redis_client,f1_query,index_name=INDEX_NAME)
+# print (result_df.head(2))
 
-# Build a prompt to provide the original query, the result and ask to summarise for the user
-summary_prompt = '''Summarise this result in a bulleted list to answer the search query a customer has sent.
-Search query: SEARCH_QUERY_HERE
-Search result: SEARCH_RESULT_HERE
-Summary:
-'''
-summary_prepped = summary_prompt.replace('SEARCH_QUERY_HERE',f1_query).replace('SEARCH_RESULT_HERE',result_df['result'][0])
-summary = openai.Completion.create(engine=COMPLETIONS_MODEL,prompt=summary_prepped,max_tokens=500)
-# Response provided by GPT-3
-print(summary['choices'][0]['text'])
+# # Build a prompt to provide the original query, the result and ask to summarise for the user
+# summary_prompt = '''Summarise this result in a bulleted list to answer the search query a customer has sent.
+# Search query: SEARCH_QUERY_HERE
+# Search result: SEARCH_RESULT_HERE
+# Summary:
+# '''
+# summary_prepped = summary_prompt.replace('SEARCH_QUERY_HERE',f1_query).replace('SEARCH_RESULT_HERE',result_df['result'][0])
+# summary = openai.Completion.create(engine=COMPLETIONS_MODEL,prompt=summary_prepped,max_tokens=500)
+# # Response provided by GPT-3
+# print(summary['choices'][0]['text'])
 
 # %% [markdown]
 # ### Search
@@ -78,18 +78,18 @@ print(summary['choices'][0]['text'])
 # %%
 # A basic example of how to interact with our ChatCompletion endpoint
 # It requires a list of "messages", consisting of a "role" (one of system, user or assistant) and "content"
-question = 'How can you help me'
+# question = 'How can you help me'
 
 
-completion = openai.ChatCompletion.create(
-  model="gpt-3.5-turbo",
-  messages=[
-    {"role": "user", "content": question}
-  ]
-)
-print(f"{completion['choices'][0]['message']['role']}: {completion['choices'][0]['message']['content']}")
+# completion = openai.ChatCompletion.create(
+#   model=CHAT_MODEL ,
+#   messages=[
+#     {"role": "user", "content": question}
+#   ]
+# )
+# print(f"{completion['choices'][0]['message']['role']}: {completion['choices'][0]['message']['content']}")
 
-# %%
+# # %%
 from termcolor import colored
 
 # A basic class to create a message as a dict for chat
@@ -115,7 +115,7 @@ class Assistant:
         
         try:
             completion = openai.ChatCompletion.create(
-              model="gpt-3.5-turbo",
+              model=CHAT_MODEL,
               messages=prompt
             )
             
@@ -207,8 +207,9 @@ Assistant: Searching for answers.
 # New Assistant class to add a vector database call to its responses
 class RetrievalAssistant:
     
-    def __init__(self):
+    def __init__(self,INDEX_NAME):
         self.conversation_history = []  
+        self.index_name=INDEX_NAME
 
     def _get_assistant_response(self, prompt):
         
@@ -229,7 +230,7 @@ class RetrievalAssistant:
     # The function to retrieve Redis search results
     def _get_search_results(self,prompt):
         latest_question = prompt
-        search_content = get_redis_results(redis_client,latest_question,INDEX_NAME)['result'][0]
+        search_content = self.get_redis_results(latest_question,self.index_name)['result'][0]
         return search_content
         
 

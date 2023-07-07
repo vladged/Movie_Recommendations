@@ -9,7 +9,9 @@ import Redis_Cloud.config as config
 # import sys
 # print(sys.path)
 
-from Redis_Cloud.redis_Cloud import load_vectors
+from Redis_Cloud.redis_Cloud import Redis_helper
+#redis_helper=Redis_helper()
+
 
 def get_col_average_from_list_of_lists(list_of_lists):
     """Return the average of each column in a list of lists."""
@@ -62,7 +64,7 @@ def chunks(text, n, tokenizer):
 def get_unique_id_for_file_chunk(filename, chunk_index):
     return str(filename+"-!"+str(chunk_index))
 
-def handle_file_string(file,tokenizer,redis_conn, text_embedding_field,PREFIX):
+def handle_file_string(file,tokenizer,redis_conn, text_embedding_field,PREFIX,redis_helper):
     filename = file[0]
     file_body_string = file[1]
 
@@ -92,7 +94,7 @@ def handle_file_string(file,tokenizer,redis_conn, text_embedding_field,PREFIX):
                                                               , "file_chunk_index": i}}))
 
     try:
-        load_vectors(redis_conn, vectors,text_embedding_field,PREFIX)
+        redis_helper.load_vectors(vectors,text_embedding_field,PREFIX)
   
     except Exception as e:
         print(f'Ran into a problem uploading to Redis: {e}')

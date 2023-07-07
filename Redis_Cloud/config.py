@@ -12,7 +12,7 @@ VECTOR_FIELD_NAME='content_vector'
 VECTOR_DIM = 1536 #len(data['title_vector'][0]) # length of the vectors
  #VECTOR_NUMBER = len(data)                 # initial number of vect
 DISTANCE_METRIC = "COSINE"                # distance metric for the vectors (ex. COSININDEX_NAME = "f1-index"           # name of the search index
-PREFIX = "JackLondon"                            # prefix for the document keys
-INDEX_NAME = "JackLondon-index" 
+#PREFIX = "JackLondon"                            # prefix for the document keys
+#INDEX_NAME = "JackLondon-index" 
 DATABASE = 'database.db'
     

@@ -18,11 +18,14 @@ from Redis_Cloud.redis_Cloud  import *
 
 # SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 # sys.path.append(os.path.dirname(SCRIPT_DIR))
+redis_helper=Redis_helper(redis_host='localhost',redis_port='6379',redis_password_name='')
 
 def OpenAI_AnswerQuestion(question):
    
   
-    redis_client = get_db()
+    #redis_client = get_db()
+    #get_redis_connection(host='localhost',port='6379',db=0):
+    #redis_helper=Redis_helper(redis_host='localhost',port='6379',redis_password_name='')
 
     # filename = TextField("filename")
     # text_chunk = TextField("text_chunk")
@@ -60,7 +63,8 @@ def OpenAI_AnswerQuestion(question):
    
     #query='who helps sherlok holmes'
 
-    result_df = get_redis_results(redis_client,question,index_name=config.INDEX_NAME)
+
+    result_df = redis_helper.get_redis_results(question,index_name='SherlokHolmes_index')
     print (result_df.head(2))
 
     # Build a prompt to provide the original query, the result and ask to summarise for the user
