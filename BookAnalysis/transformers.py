@@ -77,8 +77,7 @@ def handle_file_string(file,tokenizer,redis_conn, text_embedding_field,PREFIX,re
 
     # Create embeddings for the text
     try:
-        text_embeddings, average_embedding = create_embeddings_for_text(
-            text_to_embed, tokenizer)
+        text_embeddings, average_embedding = create_embeddings_for_text(text_to_embed, tokenizer)
         #print("[handle_file_string] Created embedding for {}".format(filename))
     except Exception as e:
         print("[handle_file_string] Error creating embedding: {}".format(e))

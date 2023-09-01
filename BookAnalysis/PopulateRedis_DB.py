@@ -28,6 +28,9 @@ from dotenv import load_dotenv
 # DISTANCE_METRIC = "COSINE" 
 # PREFIX = "JackLondon"                            # prefix for the document keys
 # INDEX_NAME = "JackLondon-index"  
+
+
+
 def PopulateDedisDB(data_dir,prefix,index_name):
     #data_dir = 'C:\\Development\\Data\\JackLondon'
 
