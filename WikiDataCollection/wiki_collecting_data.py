@@ -55,31 +55,31 @@ def get_wiki_page(title):
         return None
 
 def recursively_find_all_pages(redis_conn,original_title, titles, titles_so_far=set()):
-    """
-    Recursively find all the pages that are linked to the Wikipedia titles in the list
-    """
+    #original_title=original_title.replace("'","")
+    create_redis_index_for_prefix(redis_conn,original_title.replace("'","").replace(" ","")+"-index",original_title)
+        
     if titles==[] :
         titles=[original_title]
     
     all_pages = []
-   # add_to_list_in_redis(redis_conn,"wiki_tiles","__")
+   # add_to_list_in_redis(redis_conn,"wiki_titles","__")
     titles = list(set(titles) - titles_so_far)
+    for title_so_far in titles_so_far:
+        add_to_set_in_redis(redis_conn,"util:wiki_titles",title_so_far)
    # titles = filter_olympic_2020_titles(titles)
     titles_so_far.update(titles)
     for title in titles:
         print(title)
-       
         page = get_wiki_page(title)
-        already_read_tiles=pull_list_from_redis(redis_conn,"wiki_tiles")
-        if (page is None or original_title.replace("'","") not in page.summary) or title in already_read_tiles:
-            add_to_list_in_redis(redis_conn,"wiki_tiles",title)
+        if_already_read_tiles=check_set_item_from_redis(redis_conn,title,"util:wiki_titles")
+          
+        if (page is None or original_title.replace("'","") not in page.summary) or if_already_read_tiles:
             continue
-        add_to_list_in_redis(redis_conn,"wiki_tiles",title)
-        store_text_in_redis(redis_conn, page.content, original_title, title)
+        store_text_in_redis_with_vector(redis_conn, page.content, original_title, title)
         
         all_pages.append(page)
 
-        new_pages = recursively_find_all_pages(original_title,page.links, titles_so_far)
+        new_pages = recursively_find_all_pages(redis_conn,original_title,page.links, titles_so_far)
         for pg in new_pages:
             if pg.title not in [p.title for p in all_pages]:
                 all_pages.append(pg)
@@ -88,6 +88,8 @@ def recursively_find_all_pages(redis_conn,original_title, titles, titles_so_far=
 
 r = redis.Redis(host="localhost", port="6379", password="")
 
+# delete_keys_with_prefix(r,"util")
+#delete_keys_with_prefix(r,"'Russo-Ukrainian War'")
 pages = recursively_find_all_pages(r,"'Russo-Ukrainian War'",[])
 len(pages)
 

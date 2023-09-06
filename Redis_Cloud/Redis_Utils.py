@@ -1,4 +1,8 @@
-import redis
+
+from redis import Redis
+from redis.commands.search.query import Query
+from redis.commands.search.field import (TextField,VectorField, NumericField)
+from redis.commands.search.indexDefinition import ( IndexDefinition,IndexType)
 import json
 import tiktoken
 from typing import Iterator
@@ -98,10 +102,8 @@ def load_vectors(redis_conn, input_list, vector_field_name,PREFIX):
 def get_unique_id_for_file_chunk(filename, chunk_index):
     return str(filename+"-!"+str(chunk_index))
 
-def store_text_in_redis(redis_conn,file_body_string,PREFIX,text_embedding_field):
-    # filename = file[0]
-    # file_body_string = file[1]
-
+def store_text_in_redis_with_vector(redis_conn,file_body_string,PREFIX,text_embedding_field):
+   
     # Clean up the file string by replacing newlines and double spaces and semi-colons
     clean_file_body_string = file_body_string.replace("  ", " ").replace("\n", "; ").replace(';',' ')
     #
@@ -121,9 +123,7 @@ def store_text_in_redis(redis_conn,file_body_string,PREFIX,text_embedding_field)
     for i, (text_chunk, embedding) in enumerate(text_embeddings):
         id = get_unique_id_for_file_chunk(text_embedding_field, i)
         vectors.append(({'id': id
-                         , "vector": embedding, 'metadata': {"filename": text_embedding_field
-                                                              , "text_chunk": text_chunk
-                                                              , "file_chunk_index": i}}))
+                         , "vector": embedding, 'metadata': {"filename": text_embedding_field, "text_chunk": text_chunk, "file_chunk_index": i}}))
 
     try:
         load_vectors(redis_conn,vectors,text_embedding_field,PREFIX)
@@ -133,28 +133,55 @@ def store_text_in_redis(redis_conn,file_body_string,PREFIX,text_embedding_field)
         
         
 def store_list_in_redis(redis_conn, list_key, initial_list):
-    
-    #redis_conn.delete(list_key)
-    
-    # Add initial list to Redis
     for item in initial_list:
         redis_conn.rpush(list_key, item)
     print(f"Initial list stored in Redis under key {list_key}")
 
 def add_to_list_in_redis(redis_conn, list_key, value):
-    """
-    Add a value to the end of a list stored in Redis.
-    """
     redis_conn.rpush(list_key, value)
-    print(f"Added {value} to Redis list under key {list_key}")
 
 def pull_list_from_redis(redis_conn, list_key):
-    """
-    Retrieve a list from Redis and return it as a Python list.
-    """
     redis_list = redis_conn.lrange(list_key, 0, -1)
-    return [item.decode("utf-8") for item in redis_list]      
+    return [item.decode("utf-8") for item in redis_list] 
 
+def add_to_set_in_redis(redis_conn, set_key, value):
+    redis_conn.sadd(set_key, value)
+  
+def check_set_item_from_redis(redis_conn, set_item,set_key)->bool:
+    exists = redis_conn.sismember(set_key, set_item)
+    return exists
+
+def delete_keys_with_prefix(redis_conn,prefix):
+    keys_for_the_prefix=redis_conn.scan_iter(prefix+":*")
+    for key in keys_for_the_prefix:
+        redis_conn.delete(key)
+
+def create_redis_index_for_prefix(redis_conn,index_name,prefix,VECTOR_FIELD_NAME='content_vector',VECTOR_DIM=1536,DISTANCE_METRIC="COSINE"):
+    text_embedding = VectorField(VECTOR_FIELD_NAME,"HNSW", {
+            "TYPE": "FLOAT32",
+            "DIM": VECTOR_DIM,
+            "DISTANCE_METRIC": DISTANCE_METRIC
+        }
+    )
+    filename = TextField("filename")
+    text_chunk = TextField("text_chunk")
+    file_chunk_index = NumericField("file_chunk_index")
+
+    # Add all our field objects to a list to be created as an index
+    fields = [filename,text_chunk,file_chunk_index,text_embedding]
+    #docker run -d --name redis-stack -p 6379:6379 -p 8001:8001 redis/redis-stack:latest
+    #redis_client.ping()
+
+    try:
+        redis_conn.ft(index_name).info()
+        print("Index already exists")
+    except Exception as e:
+        print(e)
+        # Create RediSearch Index
+        print('Not there yet. Creating')
+        redis_conn.ft(index_name).create_index(
+            fields = fields,
+            definition = IndexDefinition(prefix=prefix, index_type=IndexType.HASH))
 # r = redis.Redis(host="localhost", port="6379", password="")
 # # Initialize parameters
 # text_to_embed = "This is a long text that will be divided into chunks of 300 characters. " * 10
