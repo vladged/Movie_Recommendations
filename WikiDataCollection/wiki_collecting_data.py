@@ -73,25 +73,27 @@ def recursively_find_all_pages(redis_conn,original_title, titles, titles_so_far=
         page = get_wiki_page(title)
         if_already_read_tiles=check_set_item_from_redis(redis_conn,title,"util:wiki_titles")
           
-        if (page is None or original_title.replace("'","") not in page.summary) or if_already_read_tiles:
+        if page is None :
             continue
-        store_text_in_redis_with_vector(redis_conn, page.content, original_title, title)
+        if original_title.replace("'","").lower() in page.summary.lower() and if_already_read_tiles:
         
-        all_pages.append(page)
+            store_text_in_redis_with_vector(redis_conn, page.content, original_title, title)
+        
+            all_pages.append(page)
 
-        new_pages = recursively_find_all_pages(redis_conn,original_title,page.links, titles_so_far)
-        for pg in new_pages:
-            if pg.title not in [p.title for p in all_pages]:
-                all_pages.append(pg)
-        titles_so_far.update(page.links)
+            new_pages = recursively_find_all_pages(redis_conn,original_title,page.links, titles_so_far)
+            for pg in new_pages:
+                if pg.title not in [p.title for p in all_pages]:
+                    all_pages.append(pg)
+            titles_so_far.update(page.links)
     return all_pages
 
 r = redis.Redis(host="localhost", port="6379", password="")
 
 # delete_keys_with_prefix(r,"util")
 #delete_keys_with_prefix(r,"'Russo-Ukrainian War'")
-pages = recursively_find_all_pages(r,"'Russo-Ukrainian War'",[])
-len(pages)
+pages = recursively_find_all_pages(r,"'Prophet'",[])
+print(pages)
 
 
 # %%
