@@ -9,7 +9,7 @@ import requests
 #from DatabaseOperations import *
 #from AzureRedis.redis_Azure import *
 from Redis_Cloud.redis_Cloud import *
-from BookAnalysis.QA import *
+from QA_Redis_Vectors.QA import *
 
 #=========================================================================================
 from flask_cors import CORS 
@@ -184,7 +184,7 @@ def qa():
    question = request.form.get('question')
 
    if question:
-       from BookAnalysis.QA import  OpenAI_AnswerQuestion
+       from QA_Redis_Vectors.QA import  OpenAI_AnswerQuestion
        answers=OpenAI_AnswerQuestion(question)
  
        return render_template('_Answer.html', answer0 = answers[0],answer1 = answers[1],answer2 = answers[2],answer3 = answers[3])

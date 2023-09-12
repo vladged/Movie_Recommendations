@@ -1,6 +1,7 @@
 
 import openai
 import os
+import sys
 #import requests
 import numpy as np
 import pandas as pd
@@ -8,8 +9,18 @@ from typing import Iterator
 #import tiktoken
 #import textract
 from numpy import array, average
-from Redis_Cloud.config import * 
-from Redis_Cloud.redis_Cloud  import *
+import redis
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR = os.path.dirname(SCRIPT_DIR)
+
+# Append the root directory to sys.path
+sys.path.append(ROOT_DIR)
+
+from  Redis_Cloud.Redis_Utils import *
+
+# from Redis_Cloud.config import * 
+# from Redis_Cloud.redis_Cloud  import *
     
 # from redis import Redis
 # from redis.commands.search.query import Query
@@ -18,9 +29,9 @@ from Redis_Cloud.redis_Cloud  import *
 
 # SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 # sys.path.append(os.path.dirname(SCRIPT_DIR))
-redis_helper=Redis_helper(redis_host='localhost',redis_port='6379',redis_password_name='')
 
-def OpenAI_AnswerQuestion(question):
+
+def OpenAI_AnswerQuestion(redis_conn,question,index_name,COMPLETIONS_MODEL = "text-davinci-003"):
    
   
     #redis_client = get_db()
@@ -64,8 +75,8 @@ def OpenAI_AnswerQuestion(question):
     #query='who helps sherlok holmes'
 
 
-    result_df = redis_helper.get_redis_results(question,index_name='SherlokHolmes_index')
-    print (result_df.head(2))
+    result_df =get_redis_results(redis_conn,question,index_name)
+    #print (result_df.head(2))
 
     # Build a prompt to provide the original query, the result and ask to summarise for the user
     summary_prompt = '''Summarise this result in a bulleted list to answer the search query a customer has sent.
@@ -74,13 +85,18 @@ def OpenAI_AnswerQuestion(question):
     Summary:
     '''
     summary_prepped = summary_prompt.replace('SEARCH_QUERY_HERE',question).replace('SEARCH_RESULT_HERE',result_df['result'][0])
-    summary = openai.Completion.create(engine=config.COMPLETIONS_MODEL,prompt=summary_prepped,max_tokens=500)
-    summary_prepped1 = summary_prompt.replace('SEARCH_QUERY_HERE',question).replace('SEARCH_RESULT_HERE',result_df['result'][1])
-    summary1 = openai.Completion.create(engine=config.COMPLETIONS_MODEL,prompt=summary_prepped,max_tokens=500)
+    summary = openai.Completion.create(engine=COMPLETIONS_MODEL,prompt=summary_prepped,max_tokens=500)
+    # summary_prepped1 = summary_prompt.replace('SEARCH_QUERY_HERE',question).replace('SEARCH_RESULT_HERE',result_df['result'][1])
+    # summary1 = openai.Completion.create(engine=COMPLETIONS_MODEL,prompt=summary_prepped1,max_tokens=500)
     
+   
     
     # Response provided by GPT-3
-    print(summary['choices'][0]['text'])
+    #print(summary['choices'][0]['text'])
     
     
-    return [result_df['result'][0],result_df['result'][1],summary['choices'][0]['text'],summary1['choices'][0]['text']]
+    return summary #[result_df['result'][0],result_df['result'][1],summary['choices'][0]['text'],summary1['choices'][0]['text']]
+
+r = redis.Redis(host="localhost", port="6379", password="")
+answer=OpenAI_AnswerQuestion(r,"who served sir henry?",'SherlokHolmes_index')
+print(answer)
