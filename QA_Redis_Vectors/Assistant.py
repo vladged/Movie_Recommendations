@@ -11,8 +11,8 @@ import sys
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
 
-from Redis_Cloud.config import *
-from Redis_Cloud.redis_Cloud import *
+# from Redis_Cloud.config import *
+# from Redis_Cloud.redis_Cloud import *
 from dotenv import load_dotenv
 import os
 
@@ -20,7 +20,7 @@ load_dotenv()
 open_ai_key = os.getenv("OPENAI_API_KEY")
 openai.api_key = open_ai_key
 
-redis_helper=Redis_helper(redis_host='localhost',port='6379',redis_password_name='')
+# redis_helper=Redis_helper(redis_host='localhost',port='6379',redis_password_name='')
 
 
 # print (redis_client.ft(INDEX_NAME).info()['num_docs'])
@@ -111,7 +111,7 @@ class Assistant:
     def __init__(self):
         self.conversation_history = []
 
-    def _get_assistant_response(self, prompt):
+    def _get_assistant_response(self, prompt,CHAT_MODEL='gpt-3.5-turbo'):
         
         try:
             completion = openai.ChatCompletion.create(

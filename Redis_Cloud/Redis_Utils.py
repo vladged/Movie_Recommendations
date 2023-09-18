@@ -133,7 +133,7 @@ def pull_list_from_redis(redis_conn, list_key):
 def add_to_set_in_redis(redis_conn, set_key, value):
     redis_conn.sadd(set_key, value)
   
-def check_set_item_from_redis(redis_conn, set_item,set_key)->bool:
+def check_set_item_from_redis(redis_conn, set_item,set_key)->int:
     exists = redis_conn.sismember(set_key, set_item)
     return exists
 def set_difference_with_redis(redis_conn, initial_set, set_key):
@@ -148,6 +148,8 @@ def delete_keys_with_prefix(redis_conn,prefix):
         redis_conn.delete(key)
 
 def create_redis_index_for_prefix(redis_conn,index_name,prefix,VECTOR_FIELD_NAME='content_vector',VECTOR_DIM=1536,DISTANCE_METRIC="COSINE"):
+    
+    index_name=index_name.replace("'","")
     text_embedding = VectorField(VECTOR_FIELD_NAME,"HNSW", {
             "TYPE": "FLOAT32",
             "DIM": VECTOR_DIM,
@@ -278,4 +280,4 @@ def get_redis_results(redis_conn,query,index_name):
 
 
 # redis_conn= redis.Redis(host="localhost", port="6379", password="")
-# delete_keys_with_prefix(redis_conn,"'Knights Templar'")
+# delete_keys_with_prefix(redis_conn,"Russian invasion of Ukraine")
